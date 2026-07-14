@@ -1,0 +1,28 @@
+name: CVS Automated Gated Verification
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  cvs-sandbox-evaluation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Candidate Patch
+      uses: actions/checkout@v3
+
+    - name: Set up Python Environment
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Run CVS Continuous Verification (Static Mode)
+      run: |
+        python cvs_scanner.py
+
+    - name: Build Sandbox Container (Dynamic Boundary Test)
+      run: |
+        docker build -t cvs-sandbox:latest .
